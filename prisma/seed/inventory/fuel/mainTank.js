@@ -1,0 +1,42 @@
+module.exports = [
+  {
+    fid: "MTD-0001",
+    name: "diesel",
+    quantity: 50000,
+    quality: "class a",
+    price: "655000",
+    batchCode: "EDF-0001",
+    supplier: "phoenix",
+    contact: "09123155444",
+    address: "iba",
+    userId: 2,
+  },
+  {
+    fid: "MTD-0002",
+    name: "diesel",
+    quantity: 40000,
+    quality: "class a",
+    price: "555000",
+    batchCode: "EDF-0002",
+    supplier: "phoenix",
+    contact: "09123155444",
+    address: "iba",
+    userId: 2,
+  },
+  {
+    name: "diesel",
+    quantity: 90000,
+    batchCode: "EDF-1231",
+    userId: 2,
+  },
+  {
+    name: "diesel",
+    quantity: 85000,
+    userId: 2,
+  },
+  {
+    name: "diesel",
+    quantity: 81000,
+    userId: 2,
+  },
+];

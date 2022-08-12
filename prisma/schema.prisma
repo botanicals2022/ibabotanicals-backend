@@ -1,0 +1,494 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// USER: The user we created in postgresql
+// PASSWORD: The password we set
+// HOST: Your host, in our case localhost
+// PORT: The default port usually is {5432}
+// DATABASE: The name of the database, in my case {postgres}
+// SCHEMA: The schema name we use {public} for this
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Contact {
+  id                                        Int                                 @id @default(autoincrement())
+  telephone                                 String?
+  mobile                                    String?
+  email                                     String                              @unique
+  other                                     String? 
+  user                                      User                                @relation(fields: [userId], references: [id])
+  userId                                    Int                                 @unique
+  // staff                                     Staff?                              @relation(fields: [staffId], references: [id])
+  // staffId                                   Int 
+} 
+
+model User {
+  id                                        Int                                 @id @default(autoincrement())
+  createdAt                                 DateTime                            @default(now())
+  username                                  String                              @unique
+  password                                  String
+  firstName                                 String?                             // ? Make a field optional
+  lastName                                  String?
+  role                                      Role                                @default(USER)
+  status                                    Status                              @default(active)
+  contact                                   Contact?
+  elemi                                     Elemi[]
+  elemiLaboratory                           ElemiLaboratory[]
+  extractedElemi                            ExtractedElemi[]
+  elemiInventory                            ElemiInventory[]
+  elemiProcess                              ElemiProcess[]
+  qualityControlParameter                   QualityControlParameter[]
+  materialRequestForm                       MaterialRequestForm[]
+  transmittalForLaboratory                  TransmittalForLaboratory[]
+  transmittalForProduction                  TransmittalForProduction[]
+  material                                  Material[]
+  purchaseItem                              PurchaseItem[]
+  rawMaterial                               RawMaterial[]
+  fuel                                      Fuel[]
+  elemiFuel                                 ElemiFuel[]
+  laboratoryConsumable                      LaboratoryConsumable[]
+  officeConsumable                          OfficeConsumable[]
+  maintenanceConsumable                     MaintenanceConsumable[]
+  otherConsumable                           OtherConsumable[]
+  elemiReceiveOil                           ElemiReceiveOil[]
+  elemiProcessedOil                         ElemiProcessedOil[]
+  elemiFinalOil                             ElemiFinalOil[]
+  ticket                                    Ticket[]
+  // staffs                                    Staff[]                             // [] one to many or Make a field a list
+  // harvest                                   Harvest?
+  // procedure                                 Procedure?
+}
+
+// model Staff {
+//   id                                        Int                                 @id @default(autoincrement())
+//   firstName                                 String
+//   lastName                                  String
+//   position                                  String
+//   status                                    Status                              @default(active)
+//   user                                      User                                @relation(fields: [userId], references: [id])   // many to one
+//   userId                                    Int 
+//   contact                                   Contact?                            // one to one
+// }
+
+// model Product {
+//   id                                        Int                                 @id @default(autoincrement())
+//   name                                      String?
+//   weight                                    Int
+//   condition                                 String?
+//   description                               String?
+// }
+
+// model Procedure {
+//   id                                         Int                                @id @default(autoincrement())
+//   steam                                      Decimal?                           @db.Decimal(9,2)
+//   condenser                                  Decimal?                           @db.Decimal(9,2)
+//   boilerPsi                                  Int 
+//   flowRate                                   Int 
+//   oilRecovery                                Int 
+//   fuelUsed                                   Int 
+//   personInCharge                             String?
+//   updatedAt                                  DateTime
+//   modifiedBy                                 User                               @relation(fields: [userId], references: [id])   // many to one
+//   userId                                     Int
+// }
+
+// model Harvest {
+//   id                                         Int                                @id @default(autoincrement())
+//   location                                   String?
+//   startTime                                  DateTime?                          @default(now())
+//   endTime                                    DateTime?
+//   trees                                      Int 
+//   pickers                                    Int 
+//   condition                                  String?
+//   delivered                                  Int 
+//   status                                     String?
+//   remarks                                    String?
+//   updatedAt                                  DateTime                           @updatedAt
+//   modifiedBy                                 User                               @relation(fields: [userId], references: [id])   // many to one
+//   userId                                     Int
+// }
+
+model Elemi {
+  id                                         Int                                @id @default(autoincrement())
+  oil                                        String
+  oilInvId                                   String?
+  fuel                                       String
+  fuelInvId                                  String?
+  material                                   String    
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int    
+}
+
+model ElemiLaboratory {
+  id                                         Int                                @id @default(autoincrement())
+  product                                    String
+  productCode                                String?
+  quantity                                   Float                              @default(0)
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int     
+}
+
+model ExtractedElemi {
+  id                                         Int                                @id @default(autoincrement())
+  product                                    String 
+  productCode                                String?
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int                            
+}
+
+model ElemiInventory {
+  id                                         Int                                @id @default(autoincrement())
+  grade                                      String?      
+  percentage                                 Float?   
+  quantity                                   Float                              @default(0)
+  source                                     String[]
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+}
+
+model ElemiProcess {
+  id                                         Int                                @id @default(autoincrement())
+  jsonObject                                 Json
+  isConsumed                                 Boolean                            @default(false)
+  totalTime                                  Float                              @default(0)
+  averageFlowRate                            Float                              @default(0)
+  totalOilRecovery                           Float                              @default(0)
+  fuelConsumed                               Float                              @default(0)
+  totalResinWeight                           Float                              @default(0)
+  oilBatchNumber                             String
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+}
+
+model QualityControlParameter {
+  id                                         Int                                @id @default(autoincrement())
+  tblRows                                    Json
+  oHSBR                                      String? 
+  totalROW                                   String?
+  sAR                                        String?
+  refNumber                                  String?
+  rMBNumber                                  String?
+  outboundDate                               String?
+  remarks                                    String?
+  releasedBy                                 String
+  receivedBy                                 String
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+}
+
+model MaterialRequestForm {
+  id                                         Int                                @id @default(autoincrement())
+  tblRows                                    Json[]
+  totalWeight                                Float                              @default(0)
+  date                                       String
+  productionRequest                          String
+  endorsedBy                                 String
+  receivedBy                                 String
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+}
+
+model TransmittalForLaboratory {
+  id                                         Int                                @id @default(autoincrement())
+  tblRows                                    Json[]
+  totalHydrosol                              Float                              @default(0)
+  totalPurifiedOil                           Float                              @default(0)
+  dateReceived                               String
+  preparedBy                                 String
+  receivedBy                                 String
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+}
+
+model TransmittalForProduction {
+  id                                         Int                                @id @default(autoincrement())
+  tblRows                                    Json[]
+  totalContainer                             Float                              @default(0)
+  totalQuantity                              Float                              @default(0)
+  dateReceived                               String
+  preparedBy                                 String
+  receivedBy                                 String
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+}
+
+model ElemiReceiveOil {
+  id                                         Int                                @id @default(autoincrement())
+  tblRows                                    Json[]
+  tag                                        String?
+  prodShift                                  String?
+  totalHSE                                   Float                              @default(0)
+  totalElemiFilipina                         Float                              @default(0)
+  totalFlowRate                              Float
+  totalOilRecovery                           Float
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+}
+
+model ElemiProcessedOil {
+  id                                         Int                                @id @default(autoincrement())
+  batchNumber                                String
+  distillationDate                           String
+  prodShift                                  String?
+  hSE                                        Float                              @default(0)
+  hSELoss                                    Float                              @default(0)
+  elemiFilipina                              Float                              @default(0)
+  elemiFilipinaLoss                          Float                              @default(0)
+  totalLoss                                  Float                              @default(0)
+  recoveredOil                               Float                              @default(0)
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+}
+
+model ElemiFinalOil {
+  id                                         Int                                @id @default(autoincrement())
+  blendingDate                               String
+  lotNumber                                  String
+  hSE                                        Float                              @default(0)
+  elemiFilipina                              Float                              @default(0)
+  remarks                                    String?
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+}
+
+// model Vetiver {
+//   id                                         Int                                @id @default(autoincrement())
+//   oil                                        String?
+//   fuel                                       String?
+//   createdAt                                  DateTime                           @default(now())
+//   updatedAt                                  DateTime                           @updatedAt
+// }
+
+// model Ylang {
+//   id                                         Int                                @id @default(autoincrement())
+//   oil                                        String?
+//   fuel                                       String?
+//   createdAt                                  DateTime                           @default(now())
+//   updatedAt                                  DateTime                           @updatedAt
+// }
+
+model Material {
+  id                                         Int                                @id @default(autoincrement())
+  material                                   String
+  materialId                                 String      
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int                          
+}
+
+model PurchaseItem {
+  id                                         Int                                @id @default(autoincrement())
+  piid                                       String?
+  name                                       String?
+  quantity                                   Float                              @default(0)
+  quality                                    String?
+  price                                      String
+  type                                       String
+  batchCode                                  String?
+  supplier                                   String?
+  contact                                    String?
+  address                                    String?
+  dateOfDelivery                             DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  rawMaterial                                RawMaterial?
+  fuel                                       Fuel?
+  laboratoryConsumable                       LaboratoryConsumable?  
+  officeConsumable                           OfficeConsumable?  
+  maintenanceConsumable                      MaintenanceConsumable? 
+  otherConsumable                            OtherConsumable? 
+  user                                       User                                @relation(fields: [userId], references: [id])
+  userId                                     Int 
+}
+
+model RawMaterial {
+  id                                         Int                                 @id @default(autoincrement())
+  rmid                                       String?
+  name                                       String?
+  quantity                                   Float                               @default(0)
+  quality                                    String?
+  price                                      String
+  batchCode                                  String?
+  supplier                                   String?
+  contact                                    String?
+  address                                    String?
+  description                                String?     
+  dateOfDelivery                             DateTime                            @default(now())
+  updatedAt                                  DateTime                            @updatedAt
+  user                                       User                                @relation(fields: [userId], references: [id])
+  userId                                     Int 
+  purchaseItem                               PurchaseItem?                       @relation(fields: [purchaseItemId], references: [id])
+  purchaseItemId                             Int?                                @unique
+}
+
+model Fuel {
+  id                                         Int                                @id @default(autoincrement())
+  fid                                        String?
+  name                                       String
+  quantity                                   Float                              @default(0)                                              
+  quality                                    String?
+  price                                      String?
+  batchCode                                  String?
+  supplier                                   String?
+  contact                                    String?
+  address                                    String?
+  dateOfDelivery                             DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+  purchaseItem                               PurchaseItem?                      @relation(fields: [purchaseItemId], references: [id])
+  purchaseItemId                             Int?                               @unique
+  elemiFuel                                  ElemiFuel?
+}
+
+model ElemiFuel {
+  id                                         Int                                @id @default(autoincrement())
+  efid                                       String?
+  name                                       String
+  quantity                                   Float                              @default(0)
+  batchCode                                  String?
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+  fuel                                       Fuel?                              @relation(fields: [fuelId], references: [id])
+  fuelId                                     Int?                               @unique
+}
+
+model LaboratoryConsumable {
+  id                                         Int                                @id @default(autoincrement())
+  lid                                        String?
+  name                                       String
+  quantity                                   Float                              @default(0)
+  quality                                    String?
+  price                                      String
+  batchCode                                  String?
+  supplier                                   String?
+  contact                                    String?
+  address                                    String?
+  destination                                String?
+  description                                String? 
+  dateOfDelivery                             DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+  purchaseItem                               PurchaseItem?                      @relation(fields: [purchaseItemId], references: [id])
+  purchaseItemId                             Int?                               @unique
+}
+
+model OfficeConsumable {
+  id                                         Int                                @id @default(autoincrement())
+  oid                                        String?
+  name                                       String
+  quantity                                   Float                              @default(0)
+  quality                                    String?
+  price                                      String
+  batchCode                                  String?
+  supplier                                   String?
+  contact                                    String?
+  address                                    String?
+  destination                                String?
+  description                                String? 
+  dateOfDelivery                             DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int 
+  purchaseItem                               PurchaseItem?                      @relation(fields: [purchaseItemId], references: [id])
+  purchaseItemId                             Int?                               @unique
+}
+
+model MaintenanceConsumable {
+  id                                         Int                                @id @default(autoincrement())
+  mid                                        String?
+  name                                       String
+  quantity                                   Float                              @default(0)
+  quality                                    String?
+  price                                      String
+  batchCode                                  String?
+  supplier                                   String?
+  contact                                    String?
+  address                                    String?
+  destination                                String?
+  description                                String? 
+  dateOfDelivery                             DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int
+  purchaseItem                               PurchaseItem?                      @relation(fields: [purchaseItemId], references: [id])
+  purchaseItemId                             Int?                               @unique
+}
+
+model OtherConsumable {
+  id                                         Int                                @id @default(autoincrement())
+  othid                                      String?
+  name                                       String
+  quantity                                   Float                              @default(0)
+  quality                                    String?
+  price                                      String
+  batchCode                                  String?
+  supplier                                   String?
+  contact                                    String?
+  address                                    String?
+  destination                                String?
+  description                                String? 
+  dateOfDelivery                             DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  user                                       User                               @relation(fields: [userId], references: [id])
+  userId                                     Int
+  purchaseItem                               PurchaseItem?                      @relation(fields: [purchaseItemId], references: [id])
+  purchaseItemId                             Int?                               @unique
+}
+
+
+model Ticket {
+  id                                         Int                                @id @default(autoincrement())
+  ticketId                                   String?
+  subject                                    String
+  content                                    String?
+  user                                       User                               @relation(fields: [userId], references: [id])
+  createdAt                                  DateTime                           @default(now())
+  updatedAt                                  DateTime                           @updatedAt
+  userId                                     Int
+}
+
+enum Role {
+  USER
+  ADMIN
+  EDITOR
+}
+
+enum Status {
+  active
+  inactive
+}
